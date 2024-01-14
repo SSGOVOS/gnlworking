@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amoubine <amoubine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/20 01:12:14 by amoubine          #+#    #+#             */
-/*   Updated: 2023/12/31 13:29:05 by amoubine         ###   ########.fr       */
+/*   Created: 2023/12/26 15:31:42 by amoubine          #+#    #+#             */
+/*   Updated: 2024/01/14 16:42:34 by amoubine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-char *ft_strchr(char *s, char c)
+int	ft_strchr(char *s, char c)
 {
 	int	i;
 
@@ -20,117 +20,92 @@ char *ft_strchr(char *s, char c)
 	while (s[i])
 	{
 		if (s[i] == c)
-			return (&s[i]);
+			return (i);
 		i++;
 	}
-	return (0);
+	return (-1);
 }
 
-char	*readandjoin(int fd, char *buffer)
+char	*readandjoin(int fd, char *buffer, char *str)
 {
-	int readed;
-	if (!buffer)
+	ssize_t	i;
+
+	while (1)
 	{
-		buffer = ft_calloc(1, 1);
-		*buffer = 0;
-	}
-	char *str = (char *) malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!str)
-	{
-		free(buffer);
-		return(NULL);
-	}
-	readed = 1;
-	*str = 0;
-	while (!ft_strchr(buffer, '\n') && readed != 0)
-	{
-		readed = read(fd, str, BUFFER_SIZE);
-		if (readed < 0)
-		{
-			free(buffer);
-			free(str);
-			return (NULL);
-		}
-		str[readed] = '\0';
+		i = read(fd, str, BUFFER_SIZE);
+		if (i <= 0)
+			break ;
+		str[i] = '\0';
 		buffer = ft_strjoin(buffer, str);
-		if (!buffer)
-		{
-			free(str);
-			return (NULL);
-		}
+		if (ft_strchr(buffer, '\n') != -1)
+			break ;
 	}
 	free(str);
+	str = NULL;
 	return (buffer);
 }
 
-char *read_from_buffer(char *buffer)
+int	fun_tat7sb(char *buffer)
 {
 	int	i;
-	char *line;
-	if (!buffer[0])
-		return (NULL);
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
-		i++;
-	if (buffer[i] == '\n')
-		i++;
-	line = malloc(sizeof(char) *(i + 1));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
-	{
-		line[i] = buffer[i];
-		i++;
-	}
-	if (buffer[i] == '\n')
-	{
-		line[i] = buffer[i];
-		i++;
-	}
-	line[i] = 0;
-	return (line);
-}
-char *update_buffer(char *buffer)
-{
-	char *new;
-	int i;
-	int j;
 
 	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
+	while (buffer[i] != '\0' && buffer[i] != '\n')
 		i++;
-	if (!buffer[i])
-	{
-		free(buffer);
-		return (NULL);
-	}
-	new = malloc(sizeof(char) *( ft_strlen(buffer) - i + 1));
-	if (!new)
-	{
-		free(buffer);
-		return (NULL);
-	}
-	i++;
-	j = 0;
-	while (buffer[i])
-		new[j++] = buffer[i++];
-	new[j] = 0;
-	free(buffer);
-	return (new);
+	if (buffer[i] == '\n')
+		i++;
+	return (i);
+}
+
+char	*ft_free(char *s)
+{
+	free(s);
+	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*buffer[1024];
+	char		*str;
 	char		*nextline;
+	char		*save;
+	int			i;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer[fd] = readandjoin(fd, buffer[fd]);
-	if (!buffer[fd])
+	str = malloc((size_t)BUFFER_SIZE + 1);
+	if (!str)
 		return (NULL);
-	nextline = read_from_buffer(buffer[fd]);
-	buffer[fd] = update_buffer(buffer[fd]);
+	buffer[fd] = readandjoin(fd, buffer[fd], str);
+	if (!buffer[fd] || buffer[fd][0] == '\0')
+		return (ft_free(buffer[fd]));
+	i = fun_tat7sb(buffer[fd]);
+	nextline = malloc(i + 1);
+	if (!nextline)
+		return (ft_free(buffer[fd]));
+	ft_memmove(nextline, buffer[fd], i);
+	nextline[i] = '\0';
+	save = ft_strdup(&buffer[fd][i]);
+	free(buffer[fd]);
+	buffer[fd] = save;
 	return (nextline);
 }
+// int	main(void)
+// {
+// 	int		i;
+// 	char	*s;
+// 	int		p;
+
+// 	i = open("text.txt", O_RDONLY);
+// 	s = get_next_line(i);
+// 	// printf("%s" , s);
+// 	// free(s);
+// 	p = 0;
+// 	while (p < 5)
+// 	{
+// 		printf("%s", s);
+// 		free(s);
+// 		p++;
+// 		s = get_next_line(i);
+// 	}
+// }

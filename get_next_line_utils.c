@@ -6,7 +6,7 @@
 /*   By: amoubine <amoubine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 01:12:38 by amoubine          #+#    #+#             */
-/*   Updated: 2023/12/31 13:19:49 by amoubine         ###   ########.fr       */
+/*   Updated: 2024/01/01 15:47:14 by amoubine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ char	*ft_strdup(char *s)
 	size_t	len;
 	int		i;
 
-	if (!s)
-		return (NULL);
 	len = ft_strlen(s);
 	str = malloc((len + 1) * sizeof(char));
 	if (!str)
@@ -61,27 +59,47 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (result);
 }
 
-int	ft_strlen(char *s)
+void	*ft_memmove(void *dest, const void *src, size_t n)
 {
-	int	i;
+	if (src == dest)
+		return (dest);
+	if (!src && !dest)
+		return (NULL);
+	if (dest < src)
+		ft_memcpy(dest, src, n);
+	else
+		while (n--)
+			((unsigned char *)dest)[n] = ((unsigned char *)src)[n];
+	return (dest);
+}
+
+void	*ft_memcpy(void *dest, const void *src, size_t n)
+{
+	size_t				i;
+	const unsigned char	*s;
+	unsigned char		*d;
+
+	s = (const unsigned char *)src;
+	d = (unsigned char *)dest;
+	i = 0;
+	if (dest == src)
+		return (dest);
+	if (!s && !d)
+		return (NULL);
+	while (i < n)
+	{
+		d[i] = s[i];
+		i++;
+	}
+	return (d);
+}
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
 
 	i = 0;
 	while (s[i])
 		i++;
 	return (i);
-}
-void	*ft_calloc(size_t nelem, size_t elsize)
-{
-	void	*result;
-	size_t i;
-
-	i = 0;
-	if (nelem && elsize > SIZE_MAX / nelem)
-		return (0);
-	result = malloc(nelem * elsize);
-	if (!result)
-		return (0);
-	while (i < (nelem * elsize))
-		((char *)result)[i++] = 0;
-	return (result);
 }

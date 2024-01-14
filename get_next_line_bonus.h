@@ -6,16 +6,15 @@
 /*   By: amoubine <amoubine@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/26 15:31:54 by amoubine          #+#    #+#             */
-/*   Updated: 2023/12/31 13:30:18 by amoubine         ###   ########.fr       */
+/*   Updated: 2024/01/01 16:01:27 by amoubine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
+#  define BUFFER_SIZE 45
 # endif
 
 # include <fcntl.h>
@@ -26,12 +25,11 @@
 # include <string.h>
 # include <unistd.h>
 
-int	ft_strlen(char *s);
+size_t	ft_strlen(const char *s);
 char	*ft_strdup(char *s);
 char	*ft_strjoin(char *s1, char *s2);
 void	*ft_memmove(void *dest, const void *src, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 char	*get_next_line(int fd);
-void	*ft_calloc(size_t nelem, size_t elsize);
 
 #endif
